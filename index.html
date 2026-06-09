@@ -101,8 +101,12 @@ button:active {
     transform: scale(0.95);
 }
 
-#countdown-box {
+/* الصفحات المخفية افتراضياً */
+#intermediate-page, #countdown-box, #content {
     display: none;
+}
+
+#countdown-box {
     font-size: 90px;
     font-weight: bold;
     color: #ffd700;
@@ -116,9 +120,8 @@ button:active {
     100% { transform: scale(1); opacity: 1; }
 }
 
-#content{
-    display:none;
-    animation:show 1.2s ease forwards;
+#intermediate-page, #content {
+    animation: show 1.2s ease forwards;
 }
 
 @keyframes show{
@@ -132,7 +135,7 @@ img{
     border-radius:15px;
     margin-top:20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    display: none; /* مخفية حتى تنتهي الكتابة */
+    display: none;
 }
 
 .star{
@@ -163,7 +166,6 @@ img{
     100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
 }
 
-/* مؤشر الكتابة الوامض */
 .typed-text::after {
     content: '|';
     animation: blink 0.7s infinite;
@@ -185,9 +187,17 @@ img{
         
         <input type="password" id="password" placeholder="كلمة السر">
         <br>
-        <button onclick="openGift()">فتح المفاجأة</button>
+        <button onclick="checkPassword()">فتح المفاجأة</button>
         
         <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1;"></p>
+    </div>
+
+    <div id="intermediate-page">
+        <h1 style="font-size: 24px; line-height: 1.5; color: #ffd700;">🧠 ذكاء خارق!</h1>
+        <p style="font-size: 20px; line-height: 1.6; margin-top: 15px;">
+            جيد تركيز لا بأس به ما دام وصلتي لهاي النقطة تستحقين المعايدة 😉✨
+        </p>
+        <button onclick="startCountdown()">انتقال إلى المعايدة 🚀</button>
     </div>
 
     <div id="countdown-box">3</div>
@@ -210,46 +220,53 @@ const fullText = "أتمنى لكِ السعادة والنجاح وتحقيق �
 
 document.getElementById("password").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-        openGift();
+        checkPassword();
     }
 });
 
-function openGift(){
+// التحقق من كلمة المرور ونقلها للصفحة الوسطى
+function checkPassword(){
     let pass = document.getElementById("password").value;
 
     if(pass === secret){
         document.getElementById("login").style.display = "none";
-        
-        const countdownBox = document.getElementById("countdown-box");
-        countdownBox.style.display = "block";
-        
-        rainInterval = setInterval(createConfetti, 80);
-        
-        let timeLeft = 3;
-        let timer = setInterval(function() {
-            timeLeft--;
-            if (timeLeft > 0) {
-                countdownBox.innerText = timeLeft;
-            } else {
-                clearInterval(timer);
-                countdownBox.style.display = "none";
-                
-                document.getElementById("content").style.display = "block";
-                
-                clearInterval(rainInterval);
-                rainInterval = setInterval(createConfetti, 250);
-                
-                // بدء تأثير الكتابة الحية بعد انتهاء العداد
-                startTyping();
-            }
-        }, 1000);
-
+        document.getElementById("intermediate-page").style.display = "block";
     } else {
         document.getElementById("error").innerHTML = "❌ مع الأسف على تركيزج.. انصحج بالشطرنج 🌝";
     }
 }
 
-// دالة تأثير الكتابة حرفاً بحرف
+// بدء العداد التنازلي والمطر بعد الضغط على زر الانتقال
+function startCountdown() {
+    document.getElementById("intermediate-page").style.display = "none";
+    
+    const countdownBox = document.getElementById("countdown-box");
+    countdownBox.style.display = "block";
+    
+    // بدء هطول المطر بغزارة فوراً
+    rainInterval = setInterval(createConfetti, 80);
+    
+    let timeLeft = 3;
+    let timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownBox.innerText = timeLeft;
+        } else {
+            clearInterval(timer);
+            countdownBox.style.display = "none";
+            
+            document.getElementById("content").style.display = "block";
+            
+            // تخفيف المطر ليصبح مناسباً للقراءة
+            clearInterval(rainInterval);
+            rainInterval = setInterval(createConfetti, 250);
+            
+            // بدء تأثير الكتابة الحية
+            startTyping();
+        }
+    }, 1000);
+}
+
 function startTyping() {
     let index = 0;
     const typingElement = document.getElementById("typing-paragraph");
@@ -260,16 +277,15 @@ function startTyping() {
             index++;
         } else {
             clearInterval(typingTimer);
-            // إزالة مؤشر الكتابة الوامض بعد الانتهاء
             typingElement.classList.remove("typed-text");
-            // إظهار الصورة بشكل ناعم بعد انتهاء الكتابة
             const img = document.getElementById("birthday-img");
             img.style.display = "block";
             img.animate([{opacity: 0}, {opacity: 1}], {duration: 1000, fill: "forwards"});
         }
-    }, 100); // سرعة الكتابة (100 ملي ثانية لكل حرف)
+    }, 100);
 }
 
+// توليد خلفية النجوم الثابتة
 for(let i=0; i<80; i++){
     let s = document.createElement("div");
     s.className = "star";
@@ -297,4 +313,4 @@ function createConfetti(){
 </script>
 
 </body>
-</html>    
+</html>
