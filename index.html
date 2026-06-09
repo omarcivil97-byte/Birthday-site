@@ -101,7 +101,6 @@ button:active {
     transform: scale(0.95);
 }
 
-/* نمط العداد التنازلي البوب */
 #countdown-box {
     display: none;
     font-size: 90px;
@@ -133,6 +132,7 @@ img{
     border-radius:15px;
     margin-top:20px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: none; /* مخفية حتى تنتهي الكتابة */
 }
 
 .star{
@@ -162,6 +162,16 @@ img{
     0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
     100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
 }
+
+/* مؤشر الكتابة الوامض */
+.typed-text::after {
+    content: '|';
+    animation: blink 0.7s infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
 </style>
 </head>
 
@@ -186,11 +196,9 @@ img{
         <h1>🎉 عيد ميلاد سعيد 🎉</h1>
         <h2>كل عام وأنتِ بألف خير نــور</h2>
         
-        <p style="margin-top:15px; font-size:20px; line-height: 1.6;">
-            أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨
-        </p>
+        <p id="typing-paragraph" class="typed-text" style="margin-top:15px; font-size:20px; line-height: 1.6; min-height: 60px;"></p>
         
-        <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500" alt="Birthday Cake">
+        <img id="birthday-img" src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500" alt="Birthday Cake">
     </div>
 
 </div>
@@ -198,8 +206,8 @@ img{
 <script>
 const secret = "28";
 let rainInterval;
+const fullText = "أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨";
 
-// تفعيل زر Enter عند الكتابة في حقل كلمة السر
 document.getElementById("password").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
         openGift();
@@ -210,32 +218,29 @@ function openGift(){
     let pass = document.getElementById("password").value;
 
     if(pass === secret){
-        // 1. إخفاء واجهة الدخول
         document.getElementById("login").style.display = "none";
         
-        // 2. إظهار العداد التنازلي وبدء مطر الرموز التعبيرية فوراً
         const countdownBox = document.getElementById("countdown-box");
         countdownBox.style.display = "block";
         
-        // بدء مطر الاحتفالات بغزارة (كل 80 ملي ثانية ينزل رمز)
         rainInterval = setInterval(createConfetti, 80);
         
-        // 3. تشغيل العداد التنازلي (3 ثوانٍ)
         let timeLeft = 3;
         let timer = setInterval(function() {
             timeLeft--;
             if (timeLeft > 0) {
                 countdownBox.innerText = timeLeft;
             } else {
-                clearInterval(timer); // إيقاف العداد
-                countdownBox.style.display = "none"; // إخفاء العداد
+                clearInterval(timer);
+                countdownBox.style.display = "none";
                 
-                // 4. إظهار المعايدة ونور!
                 document.getElementById("content").style.display = "block";
                 
-                // تخفيف المطر قليلاً ليظل مستمراً بشكل هادئ وجميل أثناء القراءة
                 clearInterval(rainInterval);
                 rainInterval = setInterval(createConfetti, 250);
+                
+                // بدء تأثير الكتابة الحية بعد انتهاء العداد
+                startTyping();
             }
         }, 1000);
 
@@ -244,7 +249,27 @@ function openGift(){
     }
 }
 
-// إنشاء النجوم الخلفية الثابتة
+// دالة تأثير الكتابة حرفاً بحرف
+function startTyping() {
+    let index = 0;
+    const typingElement = document.getElementById("typing-paragraph");
+    
+    let typingTimer = setInterval(function() {
+        if (index < fullText.length) {
+            typingElement.innerHTML += fullText.charAt(index);
+            index++;
+        } else {
+            clearInterval(typingTimer);
+            // إزالة مؤشر الكتابة الوامض بعد الانتهاء
+            typingElement.classList.remove("typed-text");
+            // إظهار الصورة بشكل ناعم بعد انتهاء الكتابة
+            const img = document.getElementById("birthday-img");
+            img.style.display = "block";
+            img.animate([{opacity: 0}, {opacity: 1}], {duration: 1000, fill: "forwards"});
+        }
+    }, 100); // سرعة الكتابة (100 ملي ثانية لكل حرف)
+}
+
 for(let i=0; i<80; i++){
     let s = document.createElement("div");
     s.className = "star";
@@ -254,7 +279,6 @@ for(let i=0; i<80; i++){
     document.body.appendChild(s);
 }
 
-// دالة إنشاء مطر الاحتفالات (Confetti Rain)
 function createConfetti(){
     const emojis = ["🎉", "🎂", "🎈", "✨", "🎁", "💖", "🥳", "🧁"];
     let c = document.createElement("div");
@@ -262,11 +286,10 @@ function createConfetti(){
     c.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
     
     c.style.left = Math.random() * 100 + "vw";
-    c.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s"; // سرعة سقوط المطر (بين 1.5 إلى 3 ثواني)
+    c.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s";
     
     document.body.appendChild(c);
     
-    // إزالة العنصر بعد انتهاء الأنميشن
     setTimeout(() => {
         c.remove();
     }, 3000);
@@ -274,4 +297,4 @@ function createConfetti(){
 </script>
 
 </body>
-</html>
+</html>    
