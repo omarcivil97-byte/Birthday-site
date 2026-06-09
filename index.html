@@ -7,99 +7,160 @@
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Tahoma,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body{
-overflow:hidden;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background:linear-gradient(-45deg,#ff0080,#7928ca,#2c3e50,#00c6ff);
-background-size:400% 400%;
-animation:bg 12s ease infinite;
-color:white;
+    overflow:hidden;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(-45deg,#ff0080,#7928ca,#2c3e50,#00c6ff);
+    background-size:400% 400%;
+    animation:bg 12s ease infinite;
+    color:white;
 }
 
 @keyframes bg{
-0%{background-position:0% 50%}
-50%{background-position:100% 50%}
-100%{background-position:0% 50%}
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
 }
 
 .card{
-background:rgba(0,0,0,0.35);
-backdrop-filter:blur(10px);
-padding:30px;
-border-radius:20px;
-text-align:center;
-width:90%;
-max-width:500px;
-box-shadow:0 0 25px rgba(255,255,255,.3);
-z-index:10;
+    background:rgba(255, 255, 255, 0.1);
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding:40px 30px;
+    border-radius:25px;
+    text-align:center;
+    width:90%;
+    max-width:450px;
+    box-shadow:0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    z-index:10;
 }
 
 h1{
-margin-bottom:15px;
+    margin-bottom:15px;
+    font-size: 28px;
+}
+
+h2 {
+    margin-top: 10px;
+    color: #ffd700;
 }
 
 input{
-width:100%;
-padding:12px;
-border:none;
-border-radius:10px;
-font-size:18px;
-margin-top:10px;
+    width:100%;
+    padding:14px;
+    border: 2px solid rgba(255,255,255,0.5);
+    border-radius:12px;
+    font-size:18px;
+    margin-top:20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    text-align: center;
+    outline: none;
+    transition: 0.3s;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+input:focus {
+    border-color: #ffd700;
+    background: rgba(255, 255, 255, 0.3);
 }
 
 button{
-margin-top:15px;
-padding:12px 25px;
-border:none;
-border-radius:10px;
-font-size:18px;
-cursor:pointer;
+    margin-top:20px;
+    padding:12px 35px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    font-weight: bold;
+    cursor:pointer;
+    background: #ffd700;
+    color: #2c3e50;
+    transition: transform 0.2s, background 0.3s;
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+}
+
+button:hover {
+    transform: scale(1.05);
+    background: #fff;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* نمط العداد التنازلي البوب */
+#countdown-box {
+    display: none;
+    font-size: 90px;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0px 0px 20px rgba(255, 215, 0, 0.8);
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 #content{
-display:none;
-animation:show 1.5s;
+    display:none;
+    animation:show 1.2s ease forwards;
 }
 
 @keyframes show{
-from{opacity:0;transform:scale(.8);}
-to{opacity:1;transform:scale(1);}
+    from{opacity:0; transform:scale(.85);}
+    to{opacity:1; transform:scale(1);}
 }
 
 img{
-width:100%;
-max-width:350px;
-border-radius:15px;
-margin-top:15px;
+    width:100%;
+    max-width:300px;
+    border-radius:15px;
+    margin-top:20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
 }
 
 .star{
-position:absolute;
-width:4px;
-height:4px;
-background:white;
-border-radius:50%;
-animation:fall linear infinite;
+    position:absolute;
+    width:4px;
+    height:4px;
+    background:white;
+    border-radius:50%;
+    animation:fall linear infinite;
+    pointer-events: none;
 }
 
 @keyframes fall{
-from{
-transform:translateY(-100vh);
-opacity:1;
+    from{ transform:translateY(-10vh); opacity:1; }
+    to{ transform:translateY(110vh); opacity:0; }
 }
-to{
-transform:translateY(100vh);
-opacity:0;
+
+.confetti-piece {
+    position: absolute;
+    font-size: 32px;
+    pointer-events: none;
+    animation: drop 3s linear forwards;
+    z-index: 9;
 }
+
+@keyframes drop {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
 }
 </style>
 </head>
@@ -108,97 +169,108 @@ opacity:0;
 
 <div class="card">
 
-<div id="login">
-<h1>🎁 لديك مفاجأة خاصة </h1>
-<p>أدخل كلمة السر لفتحها ملاحظة ( شغلي تركيزج شوية )</p>
+    <div id="login">
+        <h1>🎁 لديكِ مفاجأة خاصة</h1>
+        <p>أدخلي كلمة السر لفتحها <br> <small style="color: #ffd700;">ملاحظة: ( شغلي تركيزج شوية )</small></p>
+        
+        <input type="password" id="password" placeholder="كلمة السر">
+        <br>
+        <button onclick="openGift()">فتح المفاجأة</button>
+        
+        <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1;"></p>
+    </div>
 
-<input type="password" id="password" placeholder="كلمة السر">
+    <div id="countdown-box">3</div>
 
-<button onclick="openGift()">فتح المفاجأة</button>
-
-<p id="error" style="margin-top:10px;color:#ffb3b3;"></p>
-</div>
-
-<div id="content">
-<h1>🎉 عيد ميلاد سعيد 🎉</h1>
-
-<h2>كل عام وأنت بألف خير نــور</h2>
-
-<p style="margin-top:15px;font-size:20px;">
-أتمنى لك السعادة والنجاح وتحقيق كل أحلامك.
-</p>
-
-<img src="ضع_رابط_الصورة_هنا">
-
-</div>
+    <div id="content">
+        <h1>🎉 عيد ميلاد سعيد 🎉</h1>
+        <h2>كل عام وأنتِ بألف خير نــور</h2>
+        
+        <p style="margin-top:15px; font-size:20px; line-height: 1.6;">
+            أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨
+        </p>
+        
+        <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=500" alt="Birthday Cake">
+    </div>
 
 </div>
 
 <script>
+const secret = "28";
+let rainInterval;
 
-const secret="28";
-
-function openGift(){
-
-let pass=document.getElementById("password").value;
-
-if(pass===secret){
-
-document.getElementById("login").style.display="none";
-document.getElementById("content").style.display="block";
-
-confetti();
-
-}else{
-
-document.getElementById("error").innerHTML="❌ مع الاسف على تركيزج انصحج بالشطرنج 🌝";
-
-}
-}
-
-for(let i=0;i<80;i++){
-
-let s=document.createElement("div");
-
-s.className="star";
-
-s.style.left=Math.random()*100+"vw";
-
-s.style.animationDuration=
-(Math.random()*4+3)+"s";
-
-s.style.animationDelay=
-Math.random()*5+"s";
-
-document.body.appendChild(s);
-}
-
-function confetti(){
-
-for(let i=0;i<100;i++){
-
-let c=document.createElement("div");
-
-c.innerHTML="🎉";
-
-c.style.position="absolute";
-c.style.left=Math.random()*100+"vw";
-c.style.top="-50px";
-c.style.fontSize="30px";
-
-document.body.appendChild(c);
-
-c.animate([
-{transform:"translateY(0px)"},
-{transform:"translateY(110vh)"}
-],
-{
-duration:3000+Math.random()*2000
+// تفعيل زر Enter عند الكتابة في حقل كلمة السر
+document.getElementById("password").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        openGift();
+    }
 });
 
-}
+function openGift(){
+    let pass = document.getElementById("password").value;
+
+    if(pass === secret){
+        // 1. إخفاء واجهة الدخول
+        document.getElementById("login").style.display = "none";
+        
+        // 2. إظهار العداد التنازلي وبدء مطر الرموز التعبيرية فوراً
+        const countdownBox = document.getElementById("countdown-box");
+        countdownBox.style.display = "block";
+        
+        // بدء مطر الاحتفالات بغزارة (كل 80 ملي ثانية ينزل رمز)
+        rainInterval = setInterval(createConfetti, 80);
+        
+        // 3. تشغيل العداد التنازلي (3 ثوانٍ)
+        let timeLeft = 3;
+        let timer = setInterval(function() {
+            timeLeft--;
+            if (timeLeft > 0) {
+                countdownBox.innerText = timeLeft;
+            } else {
+                clearInterval(timer); // إيقاف العداد
+                countdownBox.style.display = "none"; // إخفاء العداد
+                
+                // 4. إظهار المعايدة ونور!
+                document.getElementById("content").style.display = "block";
+                
+                // تخفيف المطر قليلاً ليظل مستمراً بشكل هادئ وجميل أثناء القراءة
+                clearInterval(rainInterval);
+                rainInterval = setInterval(createConfetti, 250);
+            }
+        }, 1000);
+
+    } else {
+        document.getElementById("error").innerHTML = "❌ مع الأسف على تركيزج.. انصحج بالشطرنج 🌝";
+    }
 }
 
+// إنشاء النجوم الخلفية الثابتة
+for(let i=0; i<80; i++){
+    let s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDuration = (Math.random()*4 + 3) + "s";
+    s.style.animationDelay = Math.random()*5 + "s";
+    document.body.appendChild(s);
+}
+
+// دالة إنشاء مطر الاحتفالات (Confetti Rain)
+function createConfetti(){
+    const emojis = ["🎉", "🎂", "🎈", "✨", "🎁", "💖", "🥳", "🧁"];
+    let c = document.createElement("div");
+    c.className = "confetti-piece";
+    c.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+    
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s"; // سرعة سقوط المطر (بين 1.5 إلى 3 ثواني)
+    
+    document.body.appendChild(c);
+    
+    // إزالة العنصر بعد انتهاء الأنميشن
+    setTimeout(() => {
+        c.remove();
+    }, 3000);
+}
 </script>
 
 </body>
