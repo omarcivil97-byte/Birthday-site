@@ -135,3 +135,244 @@ button:active {
 }
 
 @keyframes show{
+    from{opacity:0; transform:scale(.85);}
+    to{opacity:1; transform:scale(1);}
+}
+
+img{
+    width:100%;
+    max-width:300px;
+    border-radius:15px;
+    margin-top:20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: none;
+}
+
+.star{
+    position:absolute;
+    width:4px;
+    height:4px;
+    background:white;
+    border-radius:50%;
+    animation:fall linear infinite;
+    pointer-events: none;
+}
+
+@keyframes fall{
+    from{ transform:translateY(-10vh); opacity:1; }
+    to{ transform:translateY(110vh); opacity:0; }
+}
+
+.confetti-piece {
+    position: absolute;
+    font-size: 32px;
+    pointer-events: none;
+    animation: drop 3s linear forwards;
+    z-index: 9;
+}
+
+@keyframes drop {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+}
+
+.burst-piece {
+    position: absolute;
+    font-size: 35px;
+    pointer-events: none;
+    z-index: 99;
+    animation: explode 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes explode {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(0.5); opacity: 0; }
+}
+
+/* مؤشر الكتابة الوامض */
+.typed-text::after {
+    content: '|';
+    animation: blink 0.7s infinite;
+}
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="bg-music" src="https://actions.google.com/sounds/v1/music/birthday_celebration.ogg" loop></audio>
+
+<div class="card" id="main-card">
+
+    <div id="login">
+        <h1>🎁 لديكِ مفاجأة خاصة</h1>
+        <p>أدخلي كلمة السر لفتحها <br> <small style="color: #ffd700;">ملاحظة: ( شغلي تركيزج شوية )</small></p>
+        
+        <input type="password" id="password" placeholder="كلمة السر">
+        <br>
+        <button onclick="checkPassword()">فتح المفاجأة</button>
+        
+        <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1;"></p>
+    </div>
+
+    <div id="intermediate-page">
+        <h1 style="font-size: 24px; line-height: 1.5; color: #ffd700;">🧠 ذكاء خارق!</h1>
+        <p style="font-size: 20px; line-height: 1.6; margin-top: 15px;">
+            جيد تركيز لا بأس به ما دام وصلتي لهاي النقطة تستحقين المعايدة 😉✨
+        </p>
+        <button onclick="startCountdown()">انتقال إلى المعايدة 🚀</button>
+    </div>
+
+    <div id="countdown-box">3</div>
+
+    <div id="content">
+        <h1 id="line1" class="typed-text"></h1>
+        <h2 id="line2"></h2>
+        <p id="line3" style="margin-top:15px; font-size:20px; line-height: 1.6; min-height: 60px;"></p>
+        
+        <img id="birthday-img" src="nour.jpg" alt="نور">
+    </div>
+
+</div>
+
+<script>
+const secret = "28";
+let rainInterval;
+
+// النصوص المقسمة للظهور بالتتابع الحرفي
+const text1 = "🎉 عيد ميلاد سعيد 🎉";
+const text2 = "كل عام وأنتِ بألف خير نــور";
+const text3 = "أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨";
+
+document.getElementById("password").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        checkPassword();
+    }
+});
+
+function checkPassword(){
+    let pass = document.getElementById("password").value;
+    if(pass === secret){
+        document.getElementById("login").style.display = "none";
+        document.getElementById("intermediate-page").style.display = "block";
+    } else {
+        document.getElementById("error").innerHTML = "❌ مع الأسف على تركيزج.. انصحج بالشطرنج 🌝";
+    }
+}
+
+function startCountdown() {
+    document.getElementById("intermediate-page").style.display = "none";
+    const countdownBox = document.getElementById("countdown-box");
+    countdownBox.style.display = "block";
+    
+    rainInterval = setInterval(createConfetti, 80);
+    
+    let timeLeft = 3;
+    let timer = setInterval(function() {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownBox.innerText = timeLeft;
+        } else {
+            clearInterval(timer);
+            countdownBox.style.display = "none";
+            
+            triggerExplosion(); 
+            document.getElementById("content").style.display = "block";
+            
+            clearInterval(rainInterval);
+            rainInterval = setInterval(createConfetti, 250);
+            
+            // بدء سلسلة الكتابة الحية للأسطر بالترتيب
+            typeLine(document.getElementById("line1"), text1, () => {
+                document.getElementById("line1").classList.remove("typed-text");
+                document.getElementById("line2").classList.add("typed-text");
+                
+                typeLine(document.getElementById("line2"), text2, () => {
+                    document.getElementById("line2").classList.remove("typed-text");
+                    document.getElementById("line3").classList.add("typed-text");
+                    
+                    typeLine(document.getElementById("line3"), text3, () => {
+                        document.getElementById("line3").classList.remove("typed-text");
+                        
+                        // إظهار صورة نور بنعومة فائقة في النهاية
+                        const img = document.getElementById("birthday-img");
+                        img.style.display = "block";
+                        img.animate([{opacity: 0}, {opacity: 1}], {duration: 1200, fill: "forwards"});
+                    });
+                });
+            });
+        }
+    }, 1000);
+}
+
+// دالة الكتابة التدريجية العامة
+function typeLine(element, text, callback) {
+    let index = 0;
+    let timer = setInterval(() => {
+        if (index < text.length) {
+            element.innerHTML += text.charAt(index);
+            index++;
+        } else {
+            clearInterval(timer);
+            if (callback) callback();
+        }
+    }, 90);
+}
+
+function triggerExplosion() {
+    const music = document.getElementById("bg-music");
+    music.play().catch(e => console.log("Audio play blocked"));
+
+    const card = document.getElementById("main-card");
+    card.classList.add("shake");
+    setTimeout(() => card.classList.remove("shake"), 500);
+
+    const emojis = ["🎉", "✨", "💥", "🎈", "🎂", "💖", "🥳"];
+    for (let i = 0; i < 70; i++) {
+        let p = document.createElement("div");
+        p.className = "burst-piece";
+        p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        p.style.left = "50vw";
+        p.style.top = "50vh";
+        
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 300 + 150;
+        const x = Math.cos(angle) * velocity + "px";
+        const y = Math.sin(angle) * velocity + "px";
+        const r = Math.random() * 360 + "deg";
+        
+        p.style.setProperty('--x', x);
+        p.style.setProperty('--y', y);
+        p.style.setProperty('--r', r);
+        
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1500);
+    }
+}
+
+for(let i=0; i<80; i++){
+    let s = document.createElement("div");
+    s.className = "star";
+    s.style.left = Math.random()*100 + "vw";
+    s.style.animationDuration = (Math.random()*4 + 3) + "s";
+    s.style.animationDelay = Math.random()*5 + "s";
+    document.body.appendChild(s);
+}
+
+function createConfetti(){
+    const emojis = ["🎉", "🎂", "🎈", "✨", "🎁", "💖", "🥳", "🧁"];
+    let c = document.createElement("div");
+    c.className = "confetti-piece";
+    c.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+    c.style.left = Math.random() * 100 + "vw";
+    c.style.animationDuration = (Math.random() * 1.5 + 1.5) + "s";
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 3000);
+}
+</script>
+
+</body>
+</html>
