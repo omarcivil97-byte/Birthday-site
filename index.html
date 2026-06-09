@@ -43,6 +43,32 @@ body{
     box-shadow:0 8px 32px 0 rgba(0, 0, 0, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.2);
     z-index:10;
+    position: relative;
+    overflow: hidden; /* لمنع خروج الخلفية عن حدود الكارت المائل */
+    transition: background 1.5s ease;
+}
+
+/* طبقة الصورة الخلفية الشفافة للكارت */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: url('nour.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0; /* مخفية في البداية */
+    z-index: -1; /* خلف الكلام */
+    transition: opacity 1.5s ease; /* تظهر بنعومة */
+}
+
+/* تفعيل الخلفية عند الانتقال للمعايدة */
+.card.show-bg::before {
+    opacity: 0.25; /* درجة الشفافية (يمكنك زيادة الرقم إذا أردتها أوضح، مثلاً 0.35) */
+}
+
+/* تأثير تعتيم إضافي خلف النص لزيادة الوضوح */
+.card.show-bg {
+    background: rgba(0, 0, 0, 0.45); /* تعتيم الخلفية لتبرز الكتابة البيضاء */
 }
 
 /* تأثير اهتزاز الشاشة */
@@ -101,6 +127,8 @@ button{
     color: #2c3e50;
     transition: transform 0.2s, background 0.3s;
     box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    position: relative;
+    z-index: 12;
 }
 
 button:hover {
@@ -137,15 +165,6 @@ button:active {
 @keyframes show{
     from{opacity:0; transform:scale(.85);}
     to{opacity:1; transform:scale(1);}
-}
-
-img{
-    width:100%;
-    max-width:300px;
-    border-radius:15px;
-    margin-top:20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    display: none;
 }
 
 .star{
@@ -232,8 +251,6 @@ img{
         <h1 id="line1" class="typed-text"></h1>
         <h2 id="line2"></h2>
         <p id="line3" style="margin-top:15px; font-size:20px; line-height: 1.6; min-height: 60px;"></p>
-        
-        <img id="birthday-img" src="nour.jpg" alt="نور">
     </div>
 
 </div>
@@ -242,7 +259,6 @@ img{
 const secret = "28";
 let rainInterval;
 
-// النصوص المقسمة للظهور بالتتابع الحرفي
 const text1 = "🎉 عيد ميلاد سعيد 🎉";
 const text2 = "كل عام وأنتِ بألف خير نــور";
 const text3 = "أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨";
@@ -280,6 +296,10 @@ function startCountdown() {
             countdownBox.style.display = "none";
             
             triggerExplosion(); 
+            
+            // تفعيل الصورة كخلفية شفافة للكارت فوراً عند ظهور صفحة التهنئة
+            document.getElementById("main-card").classList.add("show-bg");
+            
             document.getElementById("content").style.display = "block";
             
             clearInterval(rainInterval);
@@ -296,11 +316,6 @@ function startCountdown() {
                     
                     typeLine(document.getElementById("line3"), text3, () => {
                         document.getElementById("line3").classList.remove("typed-text");
-                        
-                        // إظهار صورة نور بنعومة فائقة في النهاية
-                        const img = document.getElementById("birthday-img");
-                        img.style.display = "block";
-                        img.animate([{opacity: 0}, {opacity: 1}], {duration: 1200, fill: "forwards"});
                     });
                 });
             });
@@ -308,7 +323,6 @@ function startCountdown() {
     }, 1000);
 }
 
-// دالة الكتابة التدريجية العامة
 function typeLine(element, text, callback) {
     let index = 0;
     let timer = setInterval(() => {
