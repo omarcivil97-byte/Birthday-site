@@ -44,7 +44,7 @@ body{
     border: 1px solid rgba(255, 255, 255, 0.2);
     z-index:10;
     position: relative;
-    overflow: hidden; /* لمنع خروج الخلفية عن حدود الكارت المائل */
+    overflow: hidden;
     transition: background 1.5s ease;
 }
 
@@ -56,19 +56,17 @@ body{
     background-image: url('nour.jpg');
     background-size: cover;
     background-position: center;
-    opacity: 0; /* مخفية في البداية */
-    z-index: -1; /* خلف الكلام */
-    transition: opacity 1.5s ease; /* تظهر بنعومة */
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 1.5s ease;
 }
 
-/* تفعيل الخلفية عند الانتقال للمعايدة */
 .card.show-bg::before {
-    opacity: 0.25; /* درجة الشفافية (يمكنك زيادة الرقم إذا أردتها أوضح، مثلاً 0.35) */
+    opacity: 0.25;
 }
 
-/* تأثير تعتيم إضافي خلف النص لزيادة الوضوح */
 .card.show-bg {
-    background: rgba(0, 0, 0, 0.45); /* تعتيم الخلفية لتبرز الكتابة البيضاء */
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* تأثير اهتزاز الشاشة */
@@ -222,23 +220,23 @@ button:active {
 
 <body>
 
-<audio id="bg-music" src="https://actions.google.com/sounds/v1/music/birthday_celebration.ogg" loop></audio>
+<audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" loop></audio>
 
 <div class="card" id="main-card">
 
     <div id="login">
         <h1>🎁 لديكِ مفاجأة خاصة</h1>
-        <p>أدخلي كلمة السر لفتحها <br> <small style="color: #ffd700;">ملاحظة: ( شغلي تركيزج شوية )</small></p>
+        <p>أدخلي كلمة السر لفتحها <br> <small style="color: #ffd700;">ملاحظة: ( شغلي تركيزج شوية وراح تعرفين الرمز )</small></p>
         
         <input type="password" id="password" placeholder="كلمة السر">
         <br>
         <button onclick="checkPassword()">فتح المفاجأة</button>
         
-        <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1;"></p>
+        <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1; line-height: 1.4;"></p>
     </div>
 
     <div id="intermediate-page">
-        <h1 style="font-size: 24px; line-height: 1.5; color: #ffd700;">🧠 ذكاء خارق!</h1>
+        <h1 style="font-size: 24px; line-height: 1.5; color: #ffd700;"> مبرووك ال28 هي سنتج الجديدة !</h1>
         <p style="font-size: 20px; line-height: 1.6; margin-top: 15px;">
             جيد تركيز لا بأس به ما دام وصلتي لهاي النقطة تستحقين المعايدة 😉✨
         </p>
@@ -250,7 +248,8 @@ button:active {
     <div id="content">
         <h1 id="line1" class="typed-text"></h1>
         <h2 id="line2"></h2>
-        <p id="line3" style="margin-top:15px; font-size:20px; line-height: 1.6; min-height: 60px;"></p>
+        <p id="line3" style="margin-top:15px; font-size:20px; line-height: 1.6; min-height: 50px;"></p>
+        <p id="line4" style="margin-top:15px; font-size:18px; font-weight: bold; color: #ffd700; min-height: 30px;"></p>
     </div>
 
 </div>
@@ -258,10 +257,13 @@ button:active {
 <script>
 const secret = "28";
 let rainInterval;
+// متغير لحساب عدد المحاولات الخاطئة
+let wrongAttempts = 0;
 
 const text1 = "🎉 عيد ميلاد سعيد 🎉";
 const text2 = "كل عام وأنتِ بألف خير نــور";
 const text3 = "أتمنى لكِ السعادة والنجاح وتحقيق كل أحلامكِ. ✨";
+const text4 = "Best wishes. 10\6\2026";
 
 document.getElementById("password").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
@@ -275,7 +277,20 @@ function checkPassword(){
         document.getElementById("login").style.display = "none";
         document.getElementById("intermediate-page").style.display = "block";
     } else {
-        document.getElementById("error").innerHTML = "❌ مع الأسف على تركيزج.. انصحج بالشطرنج 🌝";
+        // زيادة عدد الأخطاء بمقدار 1 في كل مرة تكتب خطأ
+        wrongAttempts++;
+        let errorElement = document.getElementById("error");
+        
+        // تبديل الرسالة بناءً على عدد الأخطاء
+        if (wrongAttempts === 1) {
+            errorElement.innerHTML = "❌ مع الأسف على تركيزج.. انصحج بالشطرنج 🌝";
+        } else if (wrongAttempts === 2) {
+            errorElement.innerHTML = "❌ له له له معلسف ركزي شوية 🤦‍♂️";
+        } else if (wrongAttempts === 3) {
+            errorElement.innerHTML = "❌ لا تلحين باقي ثلاث محاولات وتنلغي المفاجأة 🤫";
+        } else {
+            errorElement.innerHTML = "❌ تحياتي باقي محاولتين اذا ايستي اسالي 🫡";
+        }
     }
 }
 
@@ -297,15 +312,12 @@ function startCountdown() {
             
             triggerExplosion(); 
             
-            // تفعيل الصورة كخلفية شفافة للكارت فوراً عند ظهور صفحة التهنئة
             document.getElementById("main-card").classList.add("show-bg");
-            
             document.getElementById("content").style.display = "block";
             
             clearInterval(rainInterval);
             rainInterval = setInterval(createConfetti, 250);
             
-            // بدء سلسلة الكتابة الحية للأسطر بالترتيب
             typeLine(document.getElementById("line1"), text1, () => {
                 document.getElementById("line1").classList.remove("typed-text");
                 document.getElementById("line2").classList.add("typed-text");
@@ -316,6 +328,11 @@ function startCountdown() {
                     
                     typeLine(document.getElementById("line3"), text3, () => {
                         document.getElementById("line3").classList.remove("typed-text");
+                        document.getElementById("line4").classList.add("typed-text");
+                        
+                        typeLine(document.getElementById("line4"), text4, () => {
+                            document.getElementById("line4").classList.remove("typed-text");
+                        });
                     });
                 });
             });
