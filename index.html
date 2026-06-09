@@ -45,6 +45,17 @@ body{
     z-index:10;
 }
 
+/* تأثير اهتزاز الشاشة/الكارت */
+.shake {
+    animation: shakeEffect 0.5s ease-in-out;
+}
+
+@keyframes shakeEffect {
+    0%, 100% { transform: translateX(0) translateY(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px) translateY(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px) translateY(5px); }
+}
+
 h1{
     margin-bottom:15px;
     font-size: 28px;
@@ -101,7 +112,6 @@ button:active {
     transform: scale(0.95);
 }
 
-/* الصفحات المخفية افتراضياً */
 #intermediate-page, #countdown-box, #content {
     display: none;
 }
@@ -153,6 +163,7 @@ img{
     to{ transform:translateY(110vh); opacity:0; }
 }
 
+/* نمط المطر المعتاد */
 .confetti-piece {
     position: absolute;
     font-size: 32px;
@@ -164,6 +175,20 @@ img{
 @keyframes drop {
     0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
     100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+}
+
+/* نمط جزيئات الانفجار */
+.burst-piece {
+    position: absolute;
+    font-size: 35px;
+    pointer-events: none;
+    z-index: 99;
+    animation: explode 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes explode {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(0.5); opacity: 0; }
 }
 
 .typed-text::after {
@@ -179,8 +204,12 @@ img{
 
 <body>
 
-<div class="card">
+<!-- عنصر الصوت (موسيقى عيد الميلاد) -->
+<audio id="bg-music" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" loop></audio>
 
+<div class="card" id="main-card">
+
+    <!-- 1. واجهة تسجيل الدخول -->
     <div id="login">
         <h1>🎁 لديكِ مفاجأة خاصة</h1>
         <p>أدخلي كلمة السر لفتحها <br> <small style="color: #ffd700;">ملاحظة: ( شغلي تركيزج شوية )</small></p>
@@ -192,6 +221,7 @@ img{
         <p id="error" style="margin-top:15px; font-weight: bold; color:#ffcbd1;"></p>
     </div>
 
+    <!-- 2. الواجهة الوسطى (رسالة التميز) -->
     <div id="intermediate-page">
         <h1 style="font-size: 24px; line-height: 1.5; color: #ffd700;">🧠 ذكاء خارق!</h1>
         <p style="font-size: 20px; line-height: 1.6; margin-top: 15px;">
@@ -200,8 +230,10 @@ img{
         <button onclick="startCountdown()">انتقال إلى المعايدة 🚀</button>
     </div>
 
+    <!-- 3. واجهة العداد التنازلي -->
     <div id="countdown-box">3</div>
 
+    <!-- 4. واجهة المعايدة النهائية -->
     <div id="content">
         <h1>🎉 عيد ميلاد سعيد 🎉</h1>
         <h2>كل عام وأنتِ بألف خير نــور</h2>
@@ -224,7 +256,6 @@ document.getElementById("password").addEventListener("keypress", function(event)
     }
 });
 
-// التحقق من كلمة المرور ونقلها للصفحة الوسطى
 function checkPassword(){
     let pass = document.getElementById("password").value;
 
@@ -236,14 +267,12 @@ function checkPassword(){
     }
 }
 
-// بدء العداد التنازلي والمطر بعد الضغط على زر الانتقال
 function startCountdown() {
     document.getElementById("intermediate-page").style.display = "none";
     
     const countdownBox = document.getElementById("countdown-box");
     countdownBox.style.display = "block";
     
-    // بدء هطول المطر بغزارة فوراً
     rainInterval = setInterval(createConfetti, 80);
     
     let timeLeft = 3;
@@ -255,16 +284,57 @@ function startCountdown() {
             clearInterval(timer);
             countdownBox.style.display = "none";
             
+            // اللحظة الحاسمة: تشغيل التكتيكات الانفجارية والموسيقية!
+            triggerExplosion(); 
+            
             document.getElementById("content").style.display = "block";
             
-            // تخفيف المطر ليصبح مناسباً للقراءة
             clearInterval(rainInterval);
             rainInterval = setInterval(createConfetti, 250);
             
-            // بدء تأثير الكتابة الحية
             startTyping();
         }
     }, 1000);
+}
+
+// دالة الانفجار، الاهتزاز وتشغيل الصوت
+function triggerExplosion() {
+    // 1. تشغيل الموسيقى
+    const music = document.getElementById("bg-music");
+    music.play().catch(error => console.log("المتصفح حظر التشغيل التلقائي حتى يتفاعل المستخدم"));
+
+    // 2. تفعيل اهتزاز الكارت
+    const card = document.getElementById("main-card");
+    card.classList.add("shake");
+    setTimeout(() => card.classList.remove("shake"), 500); // إزالة التأثير بعد نصف ثانية
+
+    // 3. خلق انفجار جزيئات ملونة من منتصف الشاشة
+    const emojis = ["🎉", "✨", "💥", "🎈", "🎂", "💖", "🥳"];
+    for (let i = 0; i < 70; i++) {
+        let p = document.createElement("div");
+        p.className = "burst-piece";
+        p.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
+        
+        // نقطة الانطلاق (منتصف الشاشة تقريباً)
+        p.style.left = "50vw";
+        p.style.top = "50vh";
+        
+        // تحديد اتجاهات عشوائية للانفجار الدائري
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 300 + 150; // قوة الاندفاع
+        const x = Math.cos(angle) * velocity + "px";
+        const y = Math.sin(angle) * velocity + "px";
+        const r = Math.random() * 360 + "deg";
+        
+        p.style.setProperty('--x', x);
+        p.style.setProperty('--y', y);
+        p.style.setProperty('--r', r);
+        
+        document.body.appendChild(p);
+        
+        // تنظيف الذاكرة وحذف الجزيئات
+        setTimeout(() => p.remove(), 1500);
+    }
 }
 
 function startTyping() {
@@ -285,7 +355,6 @@ function startTyping() {
     }, 100);
 }
 
-// توليد خلفية النجوم الثابتة
 for(let i=0; i<80; i++){
     let s = document.createElement("div");
     s.className = "star";
